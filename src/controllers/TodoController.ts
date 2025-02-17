@@ -85,3 +85,20 @@ export const updateTodo = (req: Request, res:Response) => {
 
     });
 }
+
+
+
+export const deleteTodo = (req: Request, res:Response) => {
+    const { id } = req.params;
+    const deleteQuery = 'DELETE FROM todos WHERE id = ?';
+    db.query(deleteQuery, [id], (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(200).json({
+        success: true,
+        message: "Todo is deleted successfully",
+        data: results
+      });
+    });
+}
