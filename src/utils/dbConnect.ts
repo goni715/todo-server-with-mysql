@@ -1,11 +1,12 @@
 import mysql from "mysql";
+import config from "../config";
 
 const dbConnect = () => {
   const db = mysql.createConnection({
-    host: "localhost",
-    user: "goni715", // Replace with your MySQL username
-    password: "85035785#", // Replace with your MySQL password
-    database: "todo", // Replace with your database name
+    host: config.host,
+    user: config.username, // Replace with your MySQL username
+    password: config.password, // Replace with your MySQL password
+    database: config.database, // Replace with your database name
   });
 
   db.connect((err) => {
