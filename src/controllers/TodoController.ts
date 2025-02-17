@@ -56,3 +56,32 @@ export const getSingleTodo = (req: Request, res:Response) => {
       res.json(results[0]);
     });
 }
+
+
+
+export const updateTodo = (req: Request, res:Response) => {
+    const { id } = req.params;
+    const { name, email } = req.body;
+    const checkEmailExistuery = 'SELECT * FROM todos WHERE id != ? AND email =? ';
+
+    db.query(checkEmailExistuery, [id, email], (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      if (results.length>0) {
+        return res.status(409).json({ message: 'This Email is already existed' });
+      }
+
+      //step-02
+      const updateQuery = 'UPDATE todos SET name = ?, email = ? WHERE id = ?';
+
+      db.query(updateQuery, [name, email, id], (err, results) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.status(200).json({ id: results.insertId, name, email});
+      });
+
+    });
+}
