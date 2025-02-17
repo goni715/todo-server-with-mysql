@@ -27,4 +27,12 @@ app.get('/', (req: Request, res: Response)=> {
 app.use('/api/v1/todo', router)
 
 
+app.use('*', (req: Request, res:Response)=> {
+    res.status(404).json({
+        sucess: false,
+        data: "Route not found"
+    })
+})
+
+
 export default app;

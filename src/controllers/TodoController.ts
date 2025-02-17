@@ -40,3 +40,19 @@ export const getAllTodos = (req: Request, res:Response) => {
       res.status(200).json(results);
     });
 }
+
+
+//get-single-todo-by-id
+export const getSingleTodo = (req: Request, res:Response) => {
+    const { id } = req.params;
+    const selectQuery = 'SELECT * FROM todos WHERE id = ?';
+    db.query(selectQuery, [id], (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (results.length === 0) {
+        return res.status(404).json({ message: 'Data not found' });
+      }
+      res.json(results[0]);
+    });
+}
