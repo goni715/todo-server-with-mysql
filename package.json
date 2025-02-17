@@ -22,6 +22,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
     "@types/mysql": "^2.15.26",
     "@types/node": "^22.13.4",
     "morgan": "^1.10.0",
