@@ -1,6 +1,5 @@
 import express, {Express, Request, Response} from 'express';
 import cors from 'cors';
-import mysql from 'mysql';
 import dbConnect from './utils/dbConnect';
 
 const app: Express = express();
