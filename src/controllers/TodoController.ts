@@ -1,18 +1,32 @@
 import { Request, Response } from "express";
 import { db } from "../utils/dbConnect";
+import { isEmail } from "validator";
 
 
 export const createTodo = (req: Request, res:Response) => {
     const { name, email} = req.body;
+    if(!name || !email){
+     return res.status(400).json({
+        success:false,
+        message: "name and email are required"
+      })
+    }
 
-   // Step 1: Check if email already exists
+    if(!isEmail(email)){
+      return res.status(400).json({
+        success:false,
+        message: "Invalid Email Address"
+      })
+    }
+
+   //Check if email already exists
   const checkEmailQuery = 'SELECT * FROM todos WHERE email = ?';
   db.query(checkEmailQuery, [email], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
 
-    // If email exists, return an error
+    // If email exists
     if (results.length > 0) {
       return res.status(409).json({ message: 'Email already exists' });
     }
@@ -23,7 +37,15 @@ export const createTodo = (req: Request, res:Response) => {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
-      res.status(201).json({ id: results.insertId, name, email});
+      res.status(201).json({
+        success: true,
+          message: "Todo is updated successfully",
+          data: {
+            id: results.insertId,
+            name,
+            email
+          }
+      });
     });
   });
 }
@@ -37,7 +59,11 @@ export const getAllTodos = (req: Request, res:Response) => {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
-      res.status(200).json(results);
+      res.status(200).json({
+        success: true,
+        message: "Todos are retrieved successfully",
+        data: results
+      });
     });
 }
 
@@ -77,14 +103,21 @@ export const updateTodo = (req: Request, res:Response) => {
         return res.status(409).json({ message: 'This Email is already existed' });
       }
 
-      //step-02
       const updateQuery = 'UPDATE todos SET name = ?, email = ? WHERE id = ?';
 
       db.query(updateQuery, [name, email, id], (err, results) => {
         if (err) {
           return res.status(500).json({ error: err.message });
         }
-        res.status(200).json({ id: results.insertId, name, email});
+        res.status(200).json({ 
+          success: true,
+          message: "Todo is updated successfully",
+          data: {
+            id: results.insertId,
+            name,
+            email
+          }
+        });
       });
 
     });
