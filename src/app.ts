@@ -20,14 +20,14 @@ dbConnect();
 
 
 app.get('/', (req: Request, res: Response)=> {
-    res.send('This is Todo Server with mysql database')
+    res.send('Todo Server with mysql database is running...')
 })
 
 
 app.use('/api/v1/todo', router)
 
 
-app.use('*', (req: Request, res:Response)=> {
+app.use((req: Request, res:Response)=> {
     res.status(404).json({
         sucess: false,
         data: "Route not found"

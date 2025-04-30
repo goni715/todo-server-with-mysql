@@ -53,7 +53,11 @@ export const getSingleTodo = (req: Request, res:Response) => {
       if (results.length === 0) {
         return res.status(404).json({ message: 'Data not found' });
       }
-      res.json(results[0]);
+      res.json({
+        success: true,
+        message: "Todo is retrieved successfully",
+        data: results[0]
+      });
     });
 }
 
