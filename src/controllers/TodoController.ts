@@ -3,7 +3,7 @@ import { db } from "../utils/dbConnect";
 import { isEmail } from "validator";
 
 
-export const createTodo = (req: Request, res:Response) => {
+export const createTodo = (req: Request, res:Response) : any => {
     const { name, email} = req.body;
     if(!name || !email){
      return res.status(400).json({
