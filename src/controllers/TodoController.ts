@@ -28,20 +28,23 @@ export const createTodo = (req: Request, res:Response) : any => {
 
     // If email exists
     if (results.length > 0) {
-      return res.status(409).json({ message: 'Email already exists' });
+      return res.status(409).json({
+         success:false,
+         message: 'Email already exists' 
+      });
     }
 
     // Step 2: Insert new 
     const insertQuery = 'INSERT INTO todos (name, email) VALUES (?, ?)';
-    db.query(insertQuery, [name, email], (err, results) => {
+    db.query(insertQuery, [name, email], (err, result) => {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
       res.status(201).json({
         success: true,
-          message: "Todo is updated successfully",
+          message: "Todo is created successfully",
           data: {
-            id: results.insertId,
+            id: result.insertId,
             name,
             email
           }
@@ -55,14 +58,14 @@ export const createTodo = (req: Request, res:Response) : any => {
 
 export const getAllTodos = (req: Request, res:Response) => {
     const query = 'SELECT * FROM todos';
-    db.query(query, (err, results) => {
+    db.query(query, (err, result) => {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
       res.status(200).json({
         success: true,
         message: "Todos are retrieved successfully",
-        data: results
+        data: result
       });
     });
 }
@@ -92,34 +95,54 @@ export const getSingleTodo = (req: Request, res:Response) => {
 export const updateTodo = (req: Request, res:Response) => {
     const { id } = req.params;
     const { name, email } = req.body;
-    const checkEmailExistuery = 'SELECT * FROM todos WHERE id != ? AND email =? ';
 
-    db.query(checkEmailExistuery, [id, email], (err, results) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
+    //check email
+    if(email){
+      const checkEmailExistuery = 'SELECT * FROM todos WHERE id != ? AND email =? ';
 
-      if (results.length>0) {
-        return res.status(409).json({ message: 'This Email is already existed' });
-      }
-
-      const updateQuery = 'UPDATE todos SET name = ?, email = ? WHERE id = ?';
-
-      db.query(updateQuery, [name, email, id], (err, results) => {
+      db.query(checkEmailExistuery, [id, email], (err, results) => {
         if (err) {
           return res.status(500).json({ error: err.message });
         }
-        res.status(200).json({ 
-          success: true,
-          message: "Todo is updated successfully",
-          data: {
-            id: results.insertId,
-            name,
-            email
-          }
-        });
+  
+        if (results.length>0) {
+          return res.status(409).json({ message: 'This Email is already existed' });
+        }
       });
+    }
+   
 
+    
+
+    let updateQuery:any;
+    let updateData:any[]=[];
+
+    if(name && email){
+      updateQuery = 'UPDATE todos SET name = ?, email = ? WHERE id = ?';
+      updateData=[name, email,id];
+    }
+
+    if(name && !email){
+      updateQuery = 'UPDATE todos SET name = ? WHERE id = ?';
+      updateData=[name, id];
+    }
+
+    if(email && !name){
+      updateQuery = 'UPDATE todos SET email = ? WHERE id = ?';
+      updateData=[email, id];
+    }
+
+
+
+    db.query(updateQuery, updateData, (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(200).json({ 
+        success: true,
+        message: "Todo is updated successfully",
+        data: result
+      });
     });
 }
 
@@ -128,14 +151,14 @@ export const updateTodo = (req: Request, res:Response) => {
 export const deleteTodo = (req: Request, res:Response) => {
     const { id } = req.params;
     const deleteQuery = 'DELETE FROM todos WHERE id = ?';
-    db.query(deleteQuery, [id], (err, results) => {
+    db.query(deleteQuery, [id], (err, result) => {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
       res.status(200).json({
         success: true,
         message: "Todo is deleted successfully",
-        data: results
+        data: result
       });
     });
 }
