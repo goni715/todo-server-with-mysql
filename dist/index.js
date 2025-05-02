@@ -7,5 +7,5 @@ const app_1 = __importDefault(require("./app"));
 const config_1 = __importDefault(require("./config"));
 const port = config_1.default.port || 5000;
 app_1.default.listen(5000, () => {
-    console.log(`Server running at @${port}`);
+    console.log(`Server running at goni @${port}`);
 });

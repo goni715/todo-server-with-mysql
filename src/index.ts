@@ -4,5 +4,5 @@ import config from "./config";
 const port = config.port || 5000;
 
 app.listen(5000, ()=> {
-    console.log(`Server running at @${port}`);
+    console.log(`Server running at goni @${port}`);
 })
