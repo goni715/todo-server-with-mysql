@@ -8,33 +8,39 @@ const createTodo = (req, res) => {
     if (!name || !email) {
         return res.status(400).json({
             success: false,
-            message: "name and email are required"
+            message: "name and email are required",
         });
     }
     if (!(0, validator_1.isEmail)(email)) {
         return res.status(400).json({
             success: false,
-            message: "Invalid Email Address"
+            message: "Invalid Email Address",
         });
     }
     //Check if email already exists
-    const checkEmailQuery = 'SELECT * FROM todos WHERE email = ?';
+    const checkEmailQuery = "SELECT * FROM todos WHERE email = ?";
     dbConnect_1.db.query(checkEmailQuery, [email], (err, results) => {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            return res.status(500).json({
+                success: false,
+                error: err.message,
+            });
         }
         // If email exists
         if (results.length > 0) {
             return res.status(409).json({
                 success: false,
-                message: 'Email already exists'
+                message: "Email already exists",
             });
         }
-        // Step 2: Insert new 
-        const insertQuery = 'INSERT INTO todos (name, email) VALUES (?, ?)';
+        // Step 2: Insert new
+        const insertQuery = "INSERT INTO todos (name, email) VALUES (?, ?)";
         dbConnect_1.db.query(insertQuery, [name, email], (err, result) => {
             if (err) {
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({
+                    success: false,
+                    error: err.message,
+                });
             }
             res.status(201).json({
                 success: true,
@@ -42,23 +48,26 @@ const createTodo = (req, res) => {
                 data: {
                     id: result.insertId,
                     name,
-                    email
-                }
+                    email,
+                },
             });
         });
     });
 };
 exports.createTodo = createTodo;
 const getAllTodos = (req, res) => {
-    const query = 'SELECT * FROM todos';
+    const query = "SELECT * FROM todos ORDER BY id DESC";
     dbConnect_1.db.query(query, (err, result) => {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            return res.status(500).json({
+                success: false,
+                error: err.message,
+            });
         }
         res.status(200).json({
             success: true,
             message: "Todos are retrieved successfully",
-            data: result
+            data: result,
         });
     });
 };
@@ -66,18 +75,21 @@ exports.getAllTodos = getAllTodos;
 //get-single-todo-by-id
 const getSingleTodo = (req, res) => {
     const { id } = req.params;
-    const selectQuery = 'SELECT * FROM todos WHERE id = ?';
+    const selectQuery = "SELECT * FROM todos WHERE id = ?";
     dbConnect_1.db.query(selectQuery, [id], (err, results) => {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            return res.status(500).json({
+                success: false,
+                error: err.message,
+            });
         }
         if (results.length === 0) {
-            return res.status(404).json({ message: 'Data not found' });
+            return res.status(404).json({ message: "Data not found" });
         }
         res.json({
             success: true,
             message: "Todo is retrieved successfully",
-            data: results[0]
+            data: results[0],
         });
     });
 };
@@ -87,53 +99,64 @@ const updateTodo = (req, res) => {
     const { name, email } = req.body;
     //check email
     if (email) {
-        const checkEmailExistuery = 'SELECT * FROM todos WHERE id != ? AND email =? ';
+        const checkEmailExistuery = "SELECT * FROM todos WHERE id != ? AND email =? ";
         dbConnect_1.db.query(checkEmailExistuery, [id, email], (err, results) => {
             if (err) {
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({
+                    success: false,
+                    error: err.message,
+                });
             }
             if (results.length > 0) {
-                return res.status(409).json({ message: 'This Email is already existed' });
+                return res
+                    .status(409)
+                    .json({ message: "This Email is already existed" });
             }
         });
     }
     let updateQuery;
     let updateData = [];
     if (name && email) {
-        updateQuery = 'UPDATE todos SET name = ?, email = ? WHERE id = ?';
+        updateQuery = "UPDATE todos SET name = ?, email = ? WHERE id = ?";
         updateData = [name, email, id];
     }
     if (name && !email) {
-        updateQuery = 'UPDATE todos SET name = ? WHERE id = ?';
+        updateQuery = "UPDATE todos SET name = ? WHERE id = ?";
         updateData = [name, id];
     }
     if (email && !name) {
-        updateQuery = 'UPDATE todos SET email = ? WHERE id = ?';
+        updateQuery = "UPDATE todos SET email = ? WHERE id = ?";
         updateData = [email, id];
     }
     dbConnect_1.db.query(updateQuery, updateData, (err, result) => {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            return res.status(500).json({
+                success: false,
+                error: err.message,
+            });
         }
         res.status(200).json({
             success: true,
             message: "Todo is updated successfully",
-            data: result
+            data: result,
         });
     });
 };
 exports.updateTodo = updateTodo;
 const deleteTodo = (req, res) => {
     const { id } = req.params;
-    const deleteQuery = 'DELETE FROM todos WHERE id = ?';
+    const deleteQuery = "DELETE FROM todos WHERE id = ?";
     dbConnect_1.db.query(deleteQuery, [id], (err, result) => {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            return res.status(500).json({
+                success: false,
+                error: err.message,
+            });
         }
         res.status(200).json({
             success: true,
             message: "Todo is deleted successfully",
-            data: result
+            data: result,
         });
     });
 };
